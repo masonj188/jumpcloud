@@ -7,9 +7,19 @@ pub mod v2;
 // TODO: Need to manually implement Debug
 #[derive(Debug)]
 pub enum JCError {
-    JumpCloud(String),
+    JumpCloud(ErrorCode),
     Reqwest(reqwest::Error),
     Other(String),
+}
+
+#[derive(Debug)]
+pub enum ErrorCode {
+    Status400(Option<String>),
+    Status401(Option<String>),
+    Status403(Option<String>),
+    Status404(Option<String>),
+    Status409(Option<String>),
+    Status500(Option<String>),
 }
 
 impl From<reqwest::Error> for JCError {
