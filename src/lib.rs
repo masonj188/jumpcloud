@@ -1,5 +1,5 @@
 use reqwest;
-use std::{env, path::PathBuf};
+use std::{env, error::Error, fmt::Display, path::PathBuf};
 
 pub mod v1;
 pub mod v2;
@@ -10,6 +10,52 @@ pub enum JCError {
     JumpCloud(ErrorCode),
     Reqwest(reqwest::Error),
     Other(String),
+}
+
+impl Error for JCError {
+    fn description(&self) -> &str {
+        match self {
+            JCError::JumpCloud(_) => "Error interacting with JumpCloud API",
+            JCError::Reqwest(_) => "Underlying reqwest client error",
+            JCError::Other(_) => "Undefined error",
+        }
+    }
+}
+
+impl Display for JCError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            JCError::JumpCloud(e) => match e {
+                ErrorCode::Status400(o) => match o {
+                    Some(s) => write!(f, "400 - bad request: {}", s),
+                    None => write!(f, "400 - bad request"),
+                },
+                ErrorCode::Status401(o) => match o {
+                    Some(s) => write!(f, "401 - request not authorized: {}", s),
+                    None => write!(f, "400 - bad request"),
+                },
+                ErrorCode::Status403(o) => match o {
+                    Some(s) => write!(f, "403 - client forbidden from accessing resource: {}", s),
+                    None => write!(f, "403 - client forbidden from accessing resource"),
+                },
+                ErrorCode::Status404(o) => match o {
+                    Some(s) => write!(f, "404 - not found: {}", s),
+                    None => write!(f, "404 - not found"),
+                },
+                ErrorCode::Status409(o) => match o {
+                    Some(s) => write!(f, "409 - conflict: {}", s),
+                    None => write!(f, "409 - conflict"),
+                },
+                ErrorCode::Status500(o) => match o {
+                    Some(s) => write!(f, "500 - Internal server error: {}", s),
+                    None => write!(f, "500 - Internal server error"),
+                },
+            },
+
+            JCError::Reqwest(e) => write!(f, "{}", e),
+            JCError::Other(s) => write!(f, "{}", s),
+        }
+    }
 }
 
 #[derive(Debug)]
