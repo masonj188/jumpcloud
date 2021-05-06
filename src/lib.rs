@@ -9,6 +9,7 @@ pub mod v2;
 pub enum JCError {
     JumpCloud(ErrorCode),
     Reqwest(reqwest::Error),
+    Serde(serde_json::error::Error),
     Other(String),
 }
 
@@ -17,6 +18,7 @@ impl Error for JCError {
         match self {
             JCError::JumpCloud(_) => "Error interacting with JumpCloud API",
             JCError::Reqwest(_) => "Underlying reqwest client error",
+            JCError::Serde(_) => "Serde serialization error",
             JCError::Other(_) => "Undefined error",
         }
     }
@@ -53,6 +55,7 @@ impl Display for JCError {
             },
 
             JCError::Reqwest(e) => write!(f, "{}", e),
+            JCError::Serde(e) => write!(f, "{}", e),
             JCError::Other(s) => write!(f, "{}", s),
         }
     }
@@ -71,6 +74,12 @@ pub enum ErrorCode {
 impl From<reqwest::Error> for JCError {
     fn from(re: reqwest::Error) -> Self {
         JCError::Reqwest(re)
+    }
+}
+
+impl From<serde_json::error::Error> for JCError {
+    fn from(se: serde_json::error::Error) -> Self {
+        JCError::Serde(se)
     }
 }
 
