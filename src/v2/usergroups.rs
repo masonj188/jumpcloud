@@ -3,7 +3,7 @@ use crate::Client;
 use crate::JCError;
 use const_format::concatcp;
 
-const URL: &'static str = concatcp!(super::URL, "usergroups/");
+const URL: &str = concatcp!(super::URL, "usergroups/");
 
 pub async fn add_user_to_group(
     c: &Client,

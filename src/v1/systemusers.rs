@@ -3,7 +3,7 @@ use crate::Client;
 use crate::JCError;
 use const_format::concatcp;
 
-const URL: &'static str = concatcp!(super::URL, "systemusers/");
+const URL: &str = concatcp!(super::URL, "systemusers/");
 
 pub async fn list_user(c: &Client, id: &str) -> Result<SystemUserReturn, JCError> {
     let resp = c
@@ -15,15 +15,8 @@ pub async fn list_user(c: &Client, id: &str) -> Result<SystemUserReturn, JCError
         .send()
         .await?;
 
-    match resp.status() {
-        reqwest::StatusCode::UNAUTHORIZED => {
-            return Err(JCError::JumpCloud(crate::ErrorCode::Status401(None)))
-        }
-        _ => (),
-    };
-
-    let raw_json = resp.text().await.unwrap();
-    let user: Result<SystemUserReturn, _> = serde_json::from_str(&raw_json);
+    resp.error_for_status_ref()?;
+    let user = resp.json::<SystemUserReturn>().await;
     let user = match user {
         Ok(u) => u,
         Err(e) => return Err(JCError::Other(e.to_string())),
@@ -42,7 +35,12 @@ pub async fn list_all_users(c: &Client) -> Result<SystemUsersList, JCError> {
         .send()
         .await?;
 
-    let users: SystemUsersList = serde_json::from_str(&resp.text().await.unwrap()).unwrap();
+    resp.error_for_status_ref()?;
+    let users = resp.json::<SystemUsersList>().await;
+    let users = match users {
+        Ok(u) => u,
+        Err(e) => return Err(JCError::Other(e.to_string())),
+    };
     Ok(users)
 }
 
@@ -72,20 +70,9 @@ pub async fn create_system_user(
         .send()
         .await?;
 
-    match resp.status() {
-        reqwest::StatusCode::BAD_REQUEST => {
-            return Err(JCError::JumpCloud(crate::ErrorCode::Status400(Some(
-                "Body was malformed".to_string(),
-            ))))
-        }
-        reqwest::StatusCode::UNAUTHORIZED => {
-            return Err(JCError::JumpCloud(crate::ErrorCode::Status401(None)))
-        }
-        _ => (),
-    }
+    resp.error_for_status_ref()?;
 
-    let raw_json = resp.text().await.unwrap();
-    let user: Result<SystemUserReturn, _> = serde_json::from_str(&raw_json);
+    let user = resp.json::<SystemUserReturn>().await;
     let user = match user {
         Ok(u) => u,
         Err(e) => return Err(JCError::Other(e.to_string())),
@@ -104,15 +91,9 @@ pub async fn delete_system_user(c: &Client, id: &str) -> Result<SystemUserReturn
         .send()
         .await?;
 
-    match resp.status() {
-        reqwest::StatusCode::UNAUTHORIZED => {
-            return Err(JCError::JumpCloud(crate::ErrorCode::Status401(None)))
-        }
-        _ => (),
-    };
+    resp.error_for_status_ref()?;
 
-    let raw_json = resp.text().await.unwrap();
-    let user: Result<SystemUserReturn, _> = serde_json::from_str(&raw_json);
+    let user = resp.json::<SystemUserReturn>().await;
     let user = match user {
         Ok(u) => u,
         Err(e) => return Err(JCError::Other(e.to_string())),

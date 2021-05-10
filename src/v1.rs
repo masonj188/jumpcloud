@@ -1,4 +1,5 @@
 pub mod models;
+pub mod systems;
 pub mod systemusers;
 
-const URL: &'static str = "https://console.jumpcloud.com/api/";
+const URL: &str = "https://console.jumpcloud.com/api/";

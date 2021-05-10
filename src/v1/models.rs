@@ -1,9 +1,10 @@
 use serde::{Deserialize, Serialize};
+
 #[derive(Debug, Deserialize)]
 pub struct SystemUsersList {
     pub results: Option<Vec<SystemUserReturn>>,
     #[serde(rename = "totalCount")]
-    pub total_count: Option<u32>,
+    pub total_count: Option<i64>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -16,7 +17,7 @@ pub struct SystemUserReturn {
     pub allow_public_key: Option<bool>,
     pub attributes: Option<Vec<Attribute>>,
     #[serde(rename = "badLoginAttempts")]
-    pub bad_login_attempts: Option<u32>,
+    pub bad_login_attempts: Option<i64>,
     pub company: Option<String>,
     #[serde(rename = "costCenter")]
     pub cost_center: Option<String>,
@@ -43,7 +44,7 @@ pub struct SystemUserReturn {
     pub lastname: Option<String>,
     pub ldap_binding_user: Option<bool>,
     pub location: Option<String>,
-    pub mfa: Option<MFA>,
+    pub mfa: Option<Mfa>,
     pub middlename: Option<String>,
     pub organization: Option<String>,
     pub password_expiration_date: Option<String>,
@@ -123,7 +124,7 @@ pub struct SystemUserPost {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub location: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub mfa: Option<MFA>,
+    pub mfa: Option<Mfa>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub middlename: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -225,7 +226,7 @@ pub struct Attribute {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct MFA {
+pub struct Mfa {
     pub configured: Option<bool>,
     pub exclusion: Option<bool>,
     #[serde(rename = "exclusionUntil")]
@@ -245,4 +246,166 @@ pub struct SSHKey {
     pub create_date: Option<String>,
     pub name: Option<String>,
     pub public_key: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct System {
+    pub id: Option<String>,
+    pub active: Option<bool>,
+    #[serde(rename = "agentVersion")]
+    pub agent_version: Option<String>,
+    #[serde(rename = "allowMultiFactorAuthentication")]
+    pub allow_multi_factor_authentication: Option<bool>,
+    #[serde(rename = "allowPublicKeyAuthentication")]
+    pub allow_public_key_authentication: Option<bool>,
+    #[serde(rename = "allowSshPasswordAuthentication")]
+    pub allow_ssh_password_authentication: Option<bool>,
+    #[serde(rename = "allowSshRootLogin")]
+    pub allow_ssh_root_login: Option<bool>,
+    #[serde(rename = "amazonInstanceID")]
+    pub amazon_instance_i_d: Option<String>,
+    pub arch: Option<String>,
+    #[serde(rename = "connectionHistory")]
+    pub connection_history: Option<Vec<String>>, // Not correct but the object isn't defined in the api docs
+    pub created: Option<String>,
+    #[serde(rename = "displayName")]
+    pub display_name: Option<String>,
+    pub fde: Option<Fde>,
+    #[serde(rename = "fileSystem")]
+    pub file_system: Option<String>,
+    #[serde(rename = "hasServiceAccount")]
+    pub has_service_account: Option<bool>,
+    pub hostname: Option<String>,
+    #[serde(rename = "lastContact")]
+    pub last_contact: Option<String>,
+    #[serde(rename = "modifySSHDConfig")]
+    pub modify_sshd_config: Option<bool>,
+    #[serde(rename = "networkInterfaces")]
+    pub network_interfaces: Option<Vec<NetworkInterface>>,
+    pub organization: Option<String>,
+    pub os: Option<String>,
+    #[serde(rename = "provisionMetadata")]
+    pub provision_metadata: Option<Provisioner>,
+    #[serde(rename = "remoteIP")]
+    pub remote_ip: Option<String>,
+    #[serde(rename = "sshRootEnabled")]
+    pub ssh_root_enabled: Option<bool>,
+    #[serde(rename = "sshdParams")]
+    pub sshd_params: Option<Vec<SshdParam>>,
+    #[serde(rename = "systemInsights")]
+    pub system_insights: Option<SystemInsights>,
+    #[serde(rename = "systemTimezone")]
+    pub system_timezone: Option<i64>,
+    pub tags: Option<Vec<String>>,
+    #[serde(rename = "templateName")]
+    pub template_name: Option<String>,
+    pub version: Option<String>,
+    pub mdm: Option<Mdm>,
+    #[serde(rename = "builtInCommands")]
+    pub built_in_commands: Option<Vec<BuiltInCommand>>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct SystemsList {
+    pub results: Option<Vec<System>>,
+    #[serde(rename = "totalCount")]
+    pub total_count: Option<i64>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct BuiltInCommand {
+    pub r#type: Option<BuiltInCommandType>,
+    pub name: Option<BuiltInCommandName>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub enum BuiltInCommandType {
+    Security,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub enum BuiltInCommandName {
+    Erase,
+    Lock,
+    Restart,
+    Shutdown,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Mdm {
+    pub vendor: Option<Vendor>,
+    pub internal: Option<MdmInternal>,
+    #[serde(rename = "profileIdentifier")]
+    pub profile_identifier: Option<String>,
+    pub deb: Option<bool>,
+    #[serde(rename = "userApproved")]
+    pub user_approved: Option<bool>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub enum Vendor {
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(rename = "none")]
+    r#None,
+    #[serde(rename = "internal")]
+    Internal,
+    #[serde(rename = "external")]
+    External,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct MdmInternal {
+    #[serde(rename = "deviceId")]
+    pub device_id: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct SystemInsights {
+    pub state: Option<SystemInsightState>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub enum SystemInsightState {
+    #[serde(rename = "enabled")]
+    Enabled,
+    #[serde(rename = "disabled")]
+    Disabled,
+    #[serde(rename = "deferred")]
+    Deferred,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SshdParam {
+    pub name: Option<String>,
+    pub value: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Provisioner {
+    pub r#type: Option<ProvisionerType>,
+    #[serde(rename = "provisionerId")]
+    pub provisioner_id: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub enum ProvisionerType {
+    Administrator,
+    Mdm,
+    User,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct NetworkInterface {
+    pub address: Option<String>,
+    pub family: Option<String>,
+    pub internal: Option<bool>,
+    pub name: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Fde {
+    pub active: Option<bool>,
+    #[serde(rename = "keyPresent")]
+    pub key_present: Option<bool>,
 }

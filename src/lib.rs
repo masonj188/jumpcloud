@@ -1,4 +1,3 @@
-use reqwest;
 use std::{env, error::Error, fmt::Display, path::PathBuf};
 
 pub mod v1;
@@ -134,21 +133,21 @@ impl Client {
     assert_ne!(client, None)
     ```
     */
-    pub fn new(fp: Option<PathBuf>) -> Option<Self> {
+    pub fn new(fp: Option<PathBuf>) -> Result<Self, Box<dyn Error>> {
         if let Some(fp) = fp {
             match load_key_from_file(fp) {
-                Some(k) => {
-                    return Some(Self {
+                Ok(k) => {
+                    return Ok(Self {
                         api_key: k,
                         http_client: reqwest::Client::new(),
                     })
                 }
-                None => return None,
+                Err(e) => return Err(e),
             };
         }
 
         if let Ok(key) = env::var("JUMPCLOUD_API_KEY") {
-            return Some(Self {
+            return Ok(Self {
                 api_key: key,
                 http_client: reqwest::Client::new(),
             });
@@ -156,37 +155,41 @@ impl Client {
 
         let mut fpath = match home::home_dir() {
             Some(p) => p,
-            None => return None,
+            None => {
+                return Err("Couldn't figure out where the home directory is"
+                    .to_string()
+                    .into())
+            }
         };
         fpath.push(".jumpcloud");
         let key = load_key_from_file(fpath);
-        if let Some(key) = key {
-            return Some(Self {
+        if let Ok(key) = key {
+            return Ok(Self {
                 api_key: key,
                 http_client: reqwest::Client::new(),
             });
         }
 
-        None
+        Err("Couldn't find/load jumpcloud credentials"
+            .to_string()
+            .into())
     }
 }
 
-fn load_key_from_file(fp: PathBuf) -> Option<String> {
+fn load_key_from_file(fp: PathBuf) -> Result<String, Box<dyn Error>> {
     let toml_string = std::fs::read_to_string(fp);
     let toml_string = match toml_string {
         Ok(s) => s,
-        Err(_) => return None,
+        Err(_) => return Err("Unable to read TOML file".to_string().into()),
     };
-    let toml_string = toml_string.parse::<toml::Value>();
-    let toml_string = match toml_string {
-        Ok(v) => v,
-        Err(_) => return None,
-    };
+    let toml_string = toml_string.parse::<toml::Value>()?;
 
-    match toml_string["api-key"].as_str() {
-        Some(k) => Some(k.to_string()),
-        None => None,
-    }
+    Ok(toml_string
+        .get("api-key")
+        .ok_or_else(|| "Did not find 'api-key' in toml file".to_string())?
+        .as_str()
+        .ok_or_else(|| "Value of 'api-key' was not a string".to_string())?
+        .to_string())
 }
 
 #[cfg(test)]
@@ -196,8 +199,8 @@ mod tests {
     #[test]
     fn give_path() {
         match Client::new(Some(PathBuf::from("./.jumpcloud"))) {
-            Some(_) => (),
-            None => panic!(),
+            Ok(_) => (),
+            Err(_) => panic!(),
         };
     }
 
@@ -208,16 +211,16 @@ mod tests {
             "ffffffffffffffffffffffffffffffffffffffff",
         );
         match Client::new(None) {
-            Some(_) => (),
-            None => panic!(),
+            Ok(_) => (),
+            Err(_) => panic!(),
         }
     }
 
     #[test]
     fn load_home() {
         match Client::new(None) {
-            Some(_) => (),
-            None => panic!(),
+            Ok(_) => (),
+            Err(_) => panic!(),
         }
     }
 
