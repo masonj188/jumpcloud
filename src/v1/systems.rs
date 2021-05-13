@@ -56,3 +56,16 @@ pub async fn reboot_system(c: &Client, id: &str) -> Result<(), JCError> {
     resp.error_for_status_ref()?;
     Ok(())
 }
+
+pub async fn shutdown_system(c: &Client, id: &str) -> Result<(), JCError> {
+    let resp = c
+        .http_client
+        .post(format!("{}{}/command/builtin/shutdown", URL, id))
+        .header("x-api-key", &c.api_key)
+        .header("Accept", "application/json")
+        .header("Content-Type", "application/json")
+        .send()
+        .await?;
+    resp.error_for_status_ref()?;
+    Ok(())
+}
