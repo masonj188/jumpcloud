@@ -409,3 +409,86 @@ pub struct Fde {
     #[serde(rename = "keyPresent")]
     pub key_present: Option<bool>,
 }
+
+#[derive(Debug, Deserialize, Serialize, Default)]
+pub struct Command {
+    command: String,
+    #[serde(rename = "commandRunners")]
+    command_runners: Option<Vec<String>>,
+    #[serde(rename = "commandType")]
+    command_type: Option<String>,
+    files: Option<Vec<String>>,
+    #[serde(rename = "launchType")]
+    launch_type: Option<String>,
+    #[serde(rename = "listensTo")]
+    listens_to: Option<String>,
+    name: Option<String>,
+    organization: Option<String>,
+    schedule: Option<String>,
+    #[serde(rename = "scheduleRepeatType")]
+    schedule_repeat_type: Option<String>,
+    sudo: Option<bool>,
+    systems: Option<Vec<String>>,
+    timeout: Option<String>,
+    trigger: Option<String>,
+    user: Option<String>,
+    shell: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct CommandFileReturn {
+    results: Option<Vec<CommandFile>>,
+    #[serde(rename = "totalCount")]
+    total_count: Option<u32>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CommandFile {
+    id: Option<String>,
+    destination: Option<String>,
+    name: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CommandResultList {
+    results: Option<Vec<CommandResult>>,
+    #[serde(rename = "totalCount")]
+    total_count: Option<u32>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CommandResult {
+    id: Option<String>,
+    command: Option<String>,
+    files: Option<Vec<String>>,
+    name: Option<String>,
+    organization: Option<String>,
+    #[serde(rename = "requestTime")]
+    request_time: Option<String>,
+    response: Option<CommandResultResponse>,
+    #[serde(rename = "responseTime")]
+    response_time: Option<String>,
+    sudo: Option<bool>,
+    system: Option<String>,
+    #[serde(rename = "systemId")]
+    system_id: Option<String>,
+    user: Option<String>,
+    #[serde(rename = "workflowId")]
+    workflow_id: Option<String>,
+    #[serde(rename = "workflowInstanceId")]
+    workflow_instance_id: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CommandResultResponse {
+    data: Option<CommandResultResponseData>,
+    error: Option<String>,
+    id: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CommandResultResponseData {
+    #[serde(rename = "exitCode")]
+    exit_code: Option<u32>,
+    output: Option<String>,
+}
