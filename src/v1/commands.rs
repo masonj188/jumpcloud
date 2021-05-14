@@ -1,4 +1,4 @@
-use crate::v1::models::Command;
+use crate::v1::models::{Command, CommandsList};
 use crate::Client;
 use crate::JCError;
 use const_format::concatcp;
@@ -23,4 +23,19 @@ pub async fn create_command(c: &Client, command: Command) -> Result<Command, JCE
     };
 
     Ok(command_response)
+}
+
+pub async fn list_all_commands(c: &Client) -> Result<CommandsList, JCError> {
+    let resp = c
+        .http_client
+        .get(URL)
+        .header("x-api-key", &c.api_key)
+        .header("Accept", "application/json")
+        .header("Content-Type", "application/json")
+        .send()
+        .await?;
+
+    resp.error_for_status_ref()?;
+
+    Ok(resp.json::<CommandsList>().await?)
 }

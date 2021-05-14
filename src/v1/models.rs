@@ -411,6 +411,13 @@ pub struct Fde {
 }
 
 #[derive(Debug, Deserialize, Serialize, Default)]
+pub struct CommandsList {
+    results: Option<Vec<Command>>,
+    #[serde(rename = "totalCount")]
+    total_count: Option<u32>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Default)]
 pub struct Command {
     command: String,
     #[serde(rename = "commandRunners")]
