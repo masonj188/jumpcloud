@@ -39,3 +39,20 @@ pub async fn list_all_commands(c: &Client) -> Result<CommandsList, JCError> {
 
     Ok(resp.json::<CommandsList>().await?)
 }
+
+pub async fn list_command(c: &Client, id: &str) -> Result<Command, JCError> {
+    let resp = c
+        .http_client
+        .get(format!("{}{}", URL, id))
+        .header("x-api-key", &c.api_key)
+        .header("Accept", "application/json")
+        .header("Content-Type", "application/json")
+        .send()
+        .await?;
+
+    resp.error_for_status_ref()?;
+
+    let mut cmd = resp.json::<Command>().await?;
+    cmd.id = Some(id.to_string());
+    Ok(cmd)
+}

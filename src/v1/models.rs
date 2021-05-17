@@ -412,90 +412,111 @@ pub struct Fde {
 
 #[derive(Debug, Deserialize, Serialize, Default)]
 pub struct CommandsList {
-    results: Option<Vec<Command>>,
+    pub results: Option<Vec<CommandsListCommand>>,
     #[serde(rename = "totalCount")]
-    total_count: Option<u32>,
+    pub total_count: Option<u32>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Default)]
+pub struct CommandsListCommand {
+    pub id: Option<String>,
+    pub command: Option<String>,
+    #[serde(rename = "commandType")]
+    pub command_type: Option<String>,
+    #[serde(rename = "launchType")]
+    pub launch_type: Option<String>,
+    #[serde(rename = "listensTo")]
+    pub listens_to: Option<String>,
+    pub name: Option<String>,
+    pub organization: Option<String>,
+    pub schedule: Option<String>,
+    #[serde(rename = "scheduleRepeatType")]
+    pub schedule_repeat_type: Option<String>,
+    pub trigger: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default)]
 pub struct Command {
-    command: String,
+    #[serde(skip)]
+    // For some reason the API doesn't include the ID, unlike every other model
+    pub id: Option<String>,
+    pub command: String,
     #[serde(rename = "commandRunners")]
-    command_runners: Option<Vec<String>>,
+    pub command_runners: Option<Vec<String>>,
     #[serde(rename = "commandType")]
-    command_type: Option<String>,
-    files: Option<Vec<String>>,
+    pub command_type: Option<String>,
+    pub files: Option<Vec<String>>,
     #[serde(rename = "launchType")]
-    launch_type: Option<String>,
+    pub launch_type: Option<String>,
     #[serde(rename = "listensTo")]
-    listens_to: Option<String>,
-    name: Option<String>,
-    organization: Option<String>,
-    schedule: Option<String>,
+    pub listens_to: Option<String>,
+    pub name: Option<String>,
+    pub organization: Option<String>,
+    pub schedule: Option<String>,
     #[serde(rename = "scheduleRepeatType")]
-    schedule_repeat_type: Option<String>,
-    sudo: Option<bool>,
-    systems: Option<Vec<String>>,
-    timeout: Option<String>,
-    trigger: Option<String>,
-    user: Option<String>,
-    shell: Option<String>,
+    pub schedule_repeat_type: Option<String>,
+    pub sudo: Option<bool>,
+    pub systems: Option<Vec<String>>,
+    pub timeout: Option<String>,
+    pub trigger: Option<String>,
+    pub user: Option<String>,
+    pub shell: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct CommandFileReturn {
-    results: Option<Vec<CommandFile>>,
+    pub results: Option<Vec<CommandFile>>,
     #[serde(rename = "totalCount")]
-    total_count: Option<u32>,
+    pub total_count: Option<u32>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CommandFile {
-    id: Option<String>,
-    destination: Option<String>,
-    name: Option<String>,
+    pub id: Option<String>,
+    pub destination: Option<String>,
+    pub name: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CommandResultList {
-    results: Option<Vec<CommandResult>>,
+    pub results: Option<Vec<CommandResult>>,
     #[serde(rename = "totalCount")]
-    total_count: Option<u32>,
+    pub total_count: Option<u32>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CommandResult {
-    id: Option<String>,
-    command: Option<String>,
-    files: Option<Vec<String>>,
-    name: Option<String>,
-    organization: Option<String>,
+    pub id: Option<String>,
+    pub command: Option<String>,
+    pub files: Option<Vec<String>>,
+    pub name: Option<String>,
+    pub organization: Option<String>,
     #[serde(rename = "requestTime")]
-    request_time: Option<String>,
-    response: Option<CommandResultResponse>,
+    pub request_time: Option<String>,
+    pub response: Option<CommandResultResponse>,
     #[serde(rename = "responseTime")]
-    response_time: Option<String>,
-    sudo: Option<bool>,
-    system: Option<String>,
+    pub response_time: Option<String>,
+    pub sudo: Option<bool>,
+    pub system: Option<String>,
     #[serde(rename = "systemId")]
-    system_id: Option<String>,
-    user: Option<String>,
+    pub system_id: Option<String>,
+    pub user: Option<String>,
     #[serde(rename = "workflowId")]
-    workflow_id: Option<String>,
+    pub workflow_id: Option<String>,
     #[serde(rename = "workflowInstanceId")]
-    workflow_instance_id: Option<String>,
+    pub workflow_instance_id: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CommandResultResponse {
-    data: Option<CommandResultResponseData>,
-    error: Option<String>,
-    id: Option<String>,
+    pub data: Option<CommandResultResponseData>,
+    pub error: Option<String>,
+    pub id: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CommandResultResponseData {
     #[serde(rename = "exitCode")]
-    exit_code: Option<u32>,
-    output: Option<String>,
+    pub exit_code: Option<u32>,
+    pub output: Option<String>,
 }
