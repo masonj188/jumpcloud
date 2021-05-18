@@ -442,24 +442,39 @@ pub struct Command {
     pub id: Option<String>,
     pub command: String,
     #[serde(rename = "commandRunners")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub command_runners: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "commandType")]
     pub command_type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub files: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "launchType")]
     pub launch_type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "listensTo")]
     pub listens_to: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub organization: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub schedule: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "scheduleRepeatType")]
     pub schedule_repeat_type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub sudo: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub systems: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub timeout: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub trigger: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub user: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub shell: Option<String>,
 }
 

@@ -9,6 +9,7 @@ pub async fn create_command(c: &Client, command: Command) -> Result<Command, JCE
     let resp = c
         .http_client
         .post(URL)
+        .header("x-api-key", &c.api_key)
         .header("Accept", "application/json")
         .header("Content-Type", "application/json")
         .body(serde_json::to_string(&command)?)
@@ -23,6 +24,22 @@ pub async fn create_command(c: &Client, command: Command) -> Result<Command, JCE
     };
 
     Ok(command_response)
+}
+
+pub async fn update_command(c: &Client, command: Command) -> Result<Command, JCError> {
+    let resp = c
+        .http_client
+        .put(format!("{}{}", URL, command.id.as_ref().unwrap()))
+        .header("x-api-key", &c.api_key)
+        .header("Accept", "application/json")
+        .header("Content-Type", "application/json")
+        .body(serde_json::to_string(&command)?)
+        .send()
+        .await?;
+
+    resp.error_for_status_ref()?;
+
+    Ok(resp.json::<Command>().await?)
 }
 
 pub async fn list_all_commands(c: &Client) -> Result<CommandsList, JCError> {
