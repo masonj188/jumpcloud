@@ -1,5 +1,6 @@
 pub mod commands;
 pub mod models;
+pub mod systemgroups;
 pub mod usergroups;
 pub mod users;
 

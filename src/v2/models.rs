@@ -28,7 +28,7 @@ pub struct GraphObjectWithPaths {
     pub r#type: GraphType,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub enum GraphType {
     #[serde(rename = "active_directory")]
     ActiveDirectory,
@@ -93,4 +93,14 @@ pub enum GraphObjectModificationType {
     Remove,
     #[serde(rename = "update")]
     Update,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct SystemGroup {
+    pub attributes: Option<String>, // NOT CORRECT
+    pub description: Option<String>,
+    pub email: Option<String>,
+    pub id: Option<String>,
+    pub name: Option<String>,
+    pub r#type: Option<GraphType>,
 }
