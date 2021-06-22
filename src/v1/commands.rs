@@ -1,7 +1,8 @@
-use crate::v1::models::{Command, CommandsList};
+use crate::v1::models::{Command, CommandResult, CommandResultList, CommandsList};
 use crate::Client;
 use crate::JCError;
 use const_format::concatcp;
+use std::collections::HashMap;
 
 const URL: &str = concatcp!(super::URL, "commands/");
 
@@ -72,4 +73,22 @@ pub async fn list_command(c: &Client, id: &str) -> Result<Command, JCError> {
     let mut cmd = resp.json::<Command>().await?;
     cmd.id = Some(id.to_string());
     Ok(cmd)
+}
+
+pub async fn launch_with_trigger(
+    c: &Client,
+    trigger: &str,
+) -> Result<HashMap<String, Vec<String>>, JCError> {
+    let resp = c
+        .http_client
+        .post(format!("{}command/trigger/{}", super::URL, trigger))
+        .header("x-api-key", &c.api_key)
+        .header("Accept", "application/json")
+        .header("Content-Type", "application/json")
+        .send()
+        .await?;
+
+    resp.error_for_status_ref()?;
+
+    Ok(resp.json::<HashMap<String, Vec<String>>>().await?)
 }
